@@ -1,0 +1,67 @@
+Świetne pytanie — jeśli chcesz, żeby AnonChat był naprawdę bezpieczny, to wymiana wiadomości musi być:
+✅ 1. End-to-End Encryption (E2EE) – absolutna podstawa
+🔐 Co to znaczy?
+
+Wiadomość jest szyfrowana na urządzeniu nadawcy, a odszyfrowywana dopiero u odbiorcy. Nikt po drodze (nawet serwer) nie widzi treści.
+🔧 Jak to wdrożyć?
+✅ Użyj biblioteki cryptography (lub PyNaCl, libsodium)
+
+Najlepiej klucze publiczne i prywatne, czyli tzw. asymetryczne szyfrowanie + szyfrowanie symetryczne (dla treści wiadomości).
+Przykład modelu:
+
+    Każdy użytkownik ma parę kluczy:
+
+        klucz_publiczny
+
+        klucz_prywatny
+
+    Kiedy Użytkownik A chce wysłać wiadomość do B:
+
+        Generuje losowy klucz symetryczny AES.
+
+        Szyfruje nim wiadomość.
+
+        Ten klucz AES szyfruje kluczem publicznym odbiorcy B.
+
+        Wysyła: { zaszyfrowana wiadomość, zaszyfrowany klucz AES }
+
+    Odbiorca B:
+
+        Odszyfrowuje klucz AES swoim kluczem prywatnym.
+
+        Dekoduje wiadomość.
+
+To się nazywa hybrydowe szyfrowanie – bardzo bezpieczne i wydajne.
+✅ 2. Uwierzytelnianie i podpisy cyfrowe
+
+Dodaj:
+
+    Podpisy cyfrowe (np. HMAC, RSA Signatures), żeby nikt nie mógł podrobić wiadomości.
+
+    Sprawdzanie tożsamości nadawcy.
+
+✅ 3. Unikaj przechowywania wiadomości w bazie w jawnej postaci
+
+Jeśli musisz trzymać wiadomości:
+
+    Zaszyfruj je przed zapisem do PostgreSQL.
+
+    Nawet jeśli ktoś zhackuje bazę, zobaczy tylko zaszyfrowane dane.
+
+✅ 4. Weryfikacja kluczy (np. QR Code lub Fingerprint)
+
+Wprowadź manualne porównanie fingerprintów kluczy, by uniknąć ataku typu Man-in-the-Middle.
+🔐 Przykładowe biblioteki:
+
+    cryptography
+
+    PyNaCl
+
+    libsodium
+
+✅ Bonus – Dodatkowe środki bezpieczeństwa
+Funkcja	Opis
+Perfect Forward Secrecy	Nowy klucz sesji do każdej rozmowy
+Self-destructing messages	Usuwanie po przeczytaniu / czasie
+Brak metadanych	Nie zapisuj kto, komu i kiedy
+Szyfrowanie transportu
